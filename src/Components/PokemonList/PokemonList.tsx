@@ -1,22 +1,29 @@
 import React from 'react';
 import {usePokemon} from '../../context/PokemonContext';
-import {Container} from './styled';
-import {ActivityIndicator, FlatList} from 'react-native';
+import {Container, styles} from './styled';
+import {FlatList} from 'react-native';
 import Text from '../Shared/Text';
+import PokemonCard from './components/PokemonCard';
 
 const PokemonList: React.FC = () => {
-  const {pokemons, loading, error, loadMore} = usePokemon();
+  const {pokemons, loading, error, loadMore, handleRefresh} = usePokemon();
 
   return (
     <Container>
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text>{error}</Text>}
       <FlatList
         data={pokemons}
         keyExtractor={item => item.name}
-        renderItem={({item}) => <Text>{item.name}</Text>}
+        renderItem={({item}) => <PokemonCard pokemon={item} />}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
+        onRefresh={() => {
+          if (!loading) {
+            handleRefresh();
+          }
+        }}
+        refreshing={loading}
+        onEndReachedThreshold={0.2}
+        style={styles.flatlist}
       />
     </Container>
   );

@@ -11,7 +11,7 @@ const guidelineBaseWidth = 320;
 
 const widthRatio = width / guidelineBaseWidth;
 
-const baseScale = size => widthRatio * size;
+const baseScale = (size) => widthRatio * size;
 
 export const scale = (size, factor = 0.2) =>
   size + (baseScale(size) - size) * factor;

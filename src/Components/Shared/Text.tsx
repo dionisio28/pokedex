@@ -1,26 +1,17 @@
 import React, {ReactNode} from 'react';
 import {TextProps} from 'react-native';
 import styled from 'styled-components/native';
-import {isAndroid, scale} from '../../utils/platformUtils';
+import {scale} from '../../utils/platformUtils';
 
-import {
-  fontFamily as fontFamilyConstant,
-  color as colorConstant,
-} from '../../styles';
+import {color as colorConstant} from '../../styles';
 
-export const FONT_FAMILY = {
+export const FONT_WEIGHT = {
   BOLD: 'Bold',
-  DEMI: 'Demi',
-  ITALIC: 'Italic',
-  REGULAR: 'Regular',
   SEMIBOLD: 'Semibold',
   MEDIUM: 'Medium',
 } as const;
 
-export type FontFamilyType = (typeof FONT_FAMILY)[keyof typeof FONT_FAMILY];
-
-type FontFamilyNameType =
-  (typeof fontFamilyConstant)[keyof typeof fontFamilyConstant];
+export type FontWeightType = (typeof FONT_WEIGHT)[keyof typeof FONT_WEIGHT];
 
 export const SIZE = {
   NORMAL: 'NORMAL',
@@ -35,7 +26,7 @@ export type FontSizeType = (typeof SIZE)[keyof typeof SIZE];
 
 export interface IText extends TextProps {
   children?: ReactNode;
-  fontFamily?: FontFamilyType;
+  fontWeight?: FontWeightType;
   size?: FontSizeType;
   color?: string;
   isUppercase?: boolean;
@@ -65,28 +56,22 @@ export const getFontSize = (sizeProp: FontSizeType): number => {
   }
 };
 
-export const getFontFamily = (
-  fontFamilyProp: FontFamilyType,
-): FontFamilyNameType => {
+export const getFontWeight = (fontFamilyProp: string): string => {
   switch (fontFamilyProp) {
-    case FONT_FAMILY.BOLD:
-      return fontFamilyConstant.urwdinBold;
-    case FONT_FAMILY.DEMI:
-      return fontFamilyConstant.urwdinCondDemi;
-    case FONT_FAMILY.ITALIC:
-      return fontFamilyConstant.urwdinItalic;
-    case FONT_FAMILY.SEMIBOLD:
-      return fontFamilyConstant.urwdinSemiCondBold;
-    case FONT_FAMILY.MEDIUM:
-      return fontFamilyConstant.urwdinMedium;
+    case FONT_WEIGHT.BOLD:
+      return 'bold';
+    case FONT_WEIGHT.SEMIBOLD:
+      return '600';
+    case FONT_WEIGHT.MEDIUM:
+      return '500';
     default:
-      return fontFamilyConstant.urwdinRegular;
+      return '400';
   }
 };
 
 const StyledText = styled.Text<IText>`
-  font-family: ${({fontFamily = FONT_FAMILY.REGULAR}) =>
-    getFontFamily(fontFamily)};
+  font-weight: ${({fontWeight = FONT_WEIGHT.REGULAR}) =>
+    getFontWeight(fontWeight)};
   font-size: ${({fixedSize = 0, size = SIZE.NORMAL}) =>
     fixedSize || getFontSize(size)}px;
   text-transform: ${({isUppercase = false}) =>
@@ -97,8 +82,6 @@ const StyledText = styled.Text<IText>`
   margin-horizontal: ${({horizontalMargin = 0}) => scale(horizontalMargin)}px;
   text-decoration: ${({isUnderlined = false}) =>
     isUnderlined ? 'underline' : 'none'};
-  padding-top: ${({fixedSize = 0, size = SIZE.NORMAL}) =>
-    isAndroid() ? 0 : (fixedSize || getFontSize(size)) * 0.25}px;
   text-align-vertical: center;
 `;
 

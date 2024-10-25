@@ -6,51 +6,70 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import api from '../Service/api';
+import {fetchPokemons, fetchPokemonAdditionalData} from '../Service/pokemonApi';
 
-interface Pokemon {
+export interface IPokemon {
   name: string;
   url: string;
-}
-
-interface PokemonResponse {
-  results: Pokemon[];
-  next: string | null;
+  imageUrl: string;
+  types: {
+    slot: number;
+    type: {name: string; url: string};
+  }[];
 }
 
 interface PokemonContextData {
-  pokemons: Pokemon[];
+  pokemons: IPokemon[];
   loading: boolean;
   error: string | null;
   loadMore: () => void;
+  handleRefresh: () => void;
 }
 
-const PokemonContext = createContext<PokemonContextData>({
-  pokemons: [],
-  loading: false,
-  error: null,
-  loadMore: () => null,
-});
+const PokemonContext = createContext<PokemonContextData>(
+  {} as PokemonContextData,
+);
 
 export const PokemonProvider: React.FC<{children: ReactNode}> = ({
   children,
 }) => {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+  const [pokemons, setPokemons] = useState<IPokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
 
-  const getPokemons = useCallback(async (currentPage: number) => {
+  const getPokemonImage = async (
+    pokemonList: {name: string; url: string}[],
+  ): Promise<IPokemon[]> => {
+    return Promise.all(
+      pokemonList.map(async pokemon => {
+        const additionalData = await fetchPokemonAdditionalData(pokemon.url);
+
+        return {
+          name: pokemon.name,
+          url: pokemon.url,
+          ...additionalData,
+        };
+      }),
+    );
+  };
+
+  const loadPokemonData = useCallback(async (currentPage: number) => {
+    console.log('1');
     setLoading(true);
     setError(null);
 
     try {
       const offset = currentPage * 10;
-      const response = await api.get<PokemonResponse>(
-        `pokemon?limit=10&offset=${offset}`,
-      );
-      console.log('response', response.data.results[0]);
-      setPokemons(prevPokemons => [...prevPokemons, ...response.data.results]);
+      const pokemonList = await fetchPokemons(offset);
+
+      const pokemonData = await getPokemonImage(pokemonList);
+
+      if (currentPage === 0) {
+        setPokemons(pokemonData);
+      } else {
+        setPokemons(prevPokemons => [...prevPokemons, ...pokemonData]);
+      }
     } catch (err) {
       setError('Failed to load Pokémons');
     } finally {
@@ -62,12 +81,20 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
     setPage(prevPage => prevPage + 1);
   };
 
+  const handleRefresh = async () => {
+    if (page > 0) {
+      setPokemons([]);
+      setPage(0);
+    }
+  };
+
   useEffect(() => {
-    getPokemons(page);
-  }, [page, getPokemons]);
+    loadPokemonData(page);
+  }, [page, loadPokemonData]);
 
   return (
-    <PokemonContext.Provider value={{pokemons, loading, error, loadMore}}>
+    <PokemonContext.Provider
+      value={{pokemons, loading, error, loadMore, handleRefresh}}>
       {children}
     </PokemonContext.Provider>
   );
