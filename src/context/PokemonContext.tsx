@@ -16,6 +16,7 @@ import debounce from 'lodash.debounce';
 
 export interface IPokemon {
   name: string;
+  id: number;
   url: string;
   imageUrl: string;
   types: {
@@ -61,7 +62,6 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
     return Promise.all(
       pokemonList.map(async pokemon => {
         const additionalData = await fetchPokemonAdditionalData(pokemon.url);
-
         return {
           name: pokemon.name,
           url: pokemon.url,
@@ -78,7 +78,6 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
     try {
       const offset = currentPage * 10;
       const pokemonList = await fetchPokemons(offset);
-
       const pokemonData = await getPokemonImage(pokemonList);
 
       if (currentPage === 0) {
@@ -152,8 +151,6 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
         setError('Pokémon not found. Please try another name.');
         return null;
       }
-
-      console.log('data', data);
 
       return {
         name: data.name,

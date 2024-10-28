@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {usePokemon} from '../../context/PokemonContext';
-import {Container, styles} from './styled';
+import {Container, PokedexDescription, styles, Title} from './styled';
 import {FlatList} from 'react-native';
 import Text from '../shared/Text';
 import PokemonCard from './components/PokemonCard';
@@ -19,6 +19,10 @@ const PokemonList: React.FC = () => {
 
   return (
     <Container>
+      <Title>Pokedex</Title>
+      <PokedexDescription>
+        Search for a Pokemon by name or using the Pokédex number.
+      </PokedexDescription>
       <SearchInput searchTerm={searchTerm} onSearch={handleChange} />
       {error && <Text>{error}</Text>}
       <FlatList

@@ -1,9 +1,10 @@
 import {Platform, StyleSheet} from 'react-native';
 import {scale, getWindowWidth} from '../../utils/platformUtils';
 import styled from 'styled-components/native';
-import { color } from '../../styles';
+import {color} from '../../styles';
+import Text, {FONT_WEIGHT} from '../shared/Text';
 
-const width = getWindowWidth() - scale(16);
+const width = getWindowWidth() - scale(18);
 
 export const styles = StyleSheet.create({
   flatlist: {
@@ -89,7 +90,8 @@ export const InputContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   background-color: ${color.gray};
-  margin-bottom: ${scale(8)}px
+  margin-bottom: ${scale(8)}px;
+  margin-top: ${scale(8)}px;
 `;
 
 export const Input = styled.TextInput`
@@ -97,6 +99,25 @@ export const Input = styled.TextInput`
   font-size: ${scale(18)}px;
   color: black;
   font-weight: 600;
+`;
+
+export const Title = styled(Text)`
+  margin-top: ${scale(10)}px;
+  margin-bottom: ${scale(10)}px;
+  font-size: ${scale(22)}px;
+  align-self: flex-start;
+  margin-left: ${scale(16)}px;
+  color: ${color.textBlack};
+  font-weight: 600;
+`;
+
+export const PokedexDescription = styled(Text)`
+  margin-bottom: ${scale(6)}px;
+  font-size: ${scale(14)}px;
+  align-self: flex-start;
+  margin-left: ${scale(16)}px;
+  color: ${color.textBlack};
+  font-weight: 400;
 `;
 
 export const ClearTextButton = styled.TouchableOpacity`

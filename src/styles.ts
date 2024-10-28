@@ -2,6 +2,7 @@ export const color = {
   black: '#000',
   white: '#fff',
   gray: '#ccc',
+  textBlack: '#1c1c1c',
 };
 
 type PokemonType =

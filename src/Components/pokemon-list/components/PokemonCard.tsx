@@ -14,6 +14,10 @@ import {Pokeball} from '../../../assets';
 import {useNavigation} from '@react-navigation/native';
 
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {
+  capitalizeFirstLetter,
+  formatPokemonId,
+} from '../../../utils/pokemonUtils';
 
 type RootStackParamList = {
   PokemonDetails: {name: string};
@@ -27,10 +31,6 @@ type PokemonDetailsNavigationProp = NativeStackNavigationProp<
 interface PokemonCardProps {
   pokemon: IPokemon;
 }
-
-const capitalizeFirstLetter = (text: string) => {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
 
 const PokemonCard = ({pokemon}: PokemonCardProps) => {
   const {navigate} = useNavigation<PokemonDetailsNavigationProp>();
@@ -58,6 +58,13 @@ const PokemonCard = ({pokemon}: PokemonCardProps) => {
           color={color.white}
           fontWeight={FONT_WEIGHT.SEMIBOLD}>
           {capitalizeFirstLetter(pokemon.name)}
+
+          <Text
+            size={SIZE.LARGE}
+            color={color.white}
+            fontWeight={FONT_WEIGHT.SEMIBOLD}>{` #${formatPokemonId(
+            pokemon.id,
+          )}`}</Text>
         </Text>
         {pokemon.types.map(({type}) => (
           <PokemonTypes>
