@@ -4,8 +4,6 @@ This is a **React Native** project inspired by various **Pokedex** UIs and power
 
 ## Getting Started
 
-> **Note**: Ensure you've completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions up to the "Creating a new application" step before proceeding.
-
 ### Step 1: Start the Metro Server
 
 Begin by starting **Metro**, the JavaScript bundler that comes with React Native.
