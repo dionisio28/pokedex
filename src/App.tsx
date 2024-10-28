@@ -1,5 +1,5 @@
 import React from 'react';
-import RootNavigator from './Routes';
+import RootNavigator from './routes';
 import {PokemonProvider} from './context/PokemonContext';
 
 const App: React.FC = () => {

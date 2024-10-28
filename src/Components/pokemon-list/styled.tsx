@@ -1,7 +1,9 @@
 import {Platform, StyleSheet} from 'react-native';
-import {scale} from '../../utils/platformUtils';
+import {scale, getWindowWidth} from '../../utils/platformUtils';
 import styled from 'styled-components/native';
 import { color } from '../../styles';
+
+const width = getWindowWidth() - scale(16);
 
 export const styles = StyleSheet.create({
   flatlist: {
@@ -74,4 +76,29 @@ export const PokeballImage = styled.Image`
   position: absolute;
   z-index: 0;
   right: ${scale(13)}px;
+`;
+
+export const InputContainer = styled.View`
+  width: ${width}px;
+  padding-left: ${scale(16)}px;
+  padding-right: ${scale(16)}px;
+  padding-top: ${scale(12)}px;
+  padding-bottom: ${scale(12)}px;
+  flex-direction: row;
+  border-radius: 30px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: ${color.gray};
+  margin-bottom: ${scale(8)}px
+`;
+
+export const Input = styled.TextInput`
+  width: 80%;
+  font-size: ${scale(18)}px;
+  color: black;
+  font-weight: 600;
+`;
+
+export const ClearTextButton = styled.TouchableOpacity`
+  padding: ${scale(2)}px;
 `;

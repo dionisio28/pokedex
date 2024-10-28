@@ -9,6 +9,7 @@ export const FONT_WEIGHT = {
   BOLD: 'Bold',
   SEMIBOLD: 'Semibold',
   MEDIUM: 'Medium',
+  REGULAR: 'Regular',
 } as const;
 
 export type FontWeightType = (typeof FONT_WEIGHT)[keyof typeof FONT_WEIGHT];

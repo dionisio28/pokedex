@@ -1,3 +1,4 @@
+import {IPokemon} from 'src/context/PokemonContext';
 import api from './api';
 
 interface Pokemon {
@@ -6,6 +7,7 @@ interface Pokemon {
 }
 
 interface PokemonDetail {
+  name: string;
   sprites: {
     front_default: string;
   };
@@ -14,6 +16,26 @@ interface PokemonDetail {
     type: {name: string; url: string};
   }[];
 }
+
+interface PokemonDetails {
+  name: string;
+  id: string;
+  sprites: {
+    front_default: string;
+  };
+  types: {
+    slot: number;
+    type: { name: string; url: string };
+  }[];
+  abilities: {
+    ability: { name: string; url: string };
+  }[];
+  stats: {
+    base_stat: number;
+    stat: { name: string };
+  }[];
+}
+
 
 interface PokemonResponse {
   results: Pokemon[];
@@ -55,5 +77,33 @@ export const fetchPokemonAdditionalData = async (
       imageUrl: '',
       types: [],
     };
+  }
+};
+
+export const searchPokemonByName = async (
+  name: string,
+): Promise<IPokemon | null> => {
+  try {
+    const response = await api.get<PokemonDetail>(
+      `pokemon/${name.toLowerCase()}`,
+    );
+    return {
+      name: response.data.name,
+      url: `https://pokeapi.co/api/v2/pokemon/${response.data.name}`,
+      imageUrl: response.data.sprites.front_default,
+      types: response.data.types,
+    };
+  } catch (error) {
+    return null;
+  }
+};
+
+export const fetchPokemonDetails = async (name: string): Promise<PokemonDetails | null> => {
+  try {
+    const response = await api.get<PokemonDetails>(`pokemon/${name.toLowerCase()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Pokémon details:', error);
+    return null;
   }
 };

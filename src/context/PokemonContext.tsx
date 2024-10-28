@@ -6,7 +6,13 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import {fetchPokemons, fetchPokemonAdditionalData} from '../Service/pokemonApi';
+import {
+  fetchPokemons,
+  fetchPokemonAdditionalData,
+  searchPokemonByName,
+  fetchPokemonDetails,
+} from '../service/pokemonApi';
+import debounce from 'lodash.debounce';
 
 export interface IPokemon {
   name: string;
@@ -18,12 +24,23 @@ export interface IPokemon {
   }[];
 }
 
+export interface IPokemonDetails {
+  name: string;
+  id: string;
+  imageUrl: string;
+  types: {name: string}[];
+  abilities: {name: string}[];
+  stats: {name: string; value: number}[];
+}
+
 interface PokemonContextData {
   pokemons: IPokemon[];
   loading: boolean;
   error: string | null;
   loadMore: () => void;
   handleRefresh: () => void;
+  handleSearch: (name: string) => void;
+  getPokemonDetails: (name: string) => Promise<IPokemonDetails | null>;
 }
 
 const PokemonContext = createContext<PokemonContextData>(
@@ -55,7 +72,6 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
   };
 
   const loadPokemonData = useCallback(async (currentPage: number) => {
-    console.log('1');
     setLoading(true);
     setError(null);
 
@@ -88,13 +104,90 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
     }
   };
 
+  const searchPokemon = async (name: string) => {
+    setLoading(true);
+    setError(null);
+    setPage(0);
+    try {
+      const pokemon = await searchPokemonByName(name);
+      if (pokemon) {
+        setPokemons([]);
+        setPokemons([pokemon]);
+      } else {
+        setError('No Pokémon found');
+        setPokemons([]);
+      }
+    } catch (err) {
+      setError('Failed to search Pokémon');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSearchPokemon = useCallback(
+    debounce((name: string) => {
+      if (name.trim()) {
+        searchPokemon(name);
+      } else {
+        handleRefresh();
+      }
+    }, 700),
+    [],
+  );
+
+  const handleSearch = (name: string) => {
+    debouncedSearchPokemon(name);
+  };
+
+  const getPokemonDetails = async (
+    name: string,
+  ): Promise<IPokemonDetails | null> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchPokemonDetails(name);
+      if (!data) {
+        setError('Pokémon not found. Please try another name.');
+        return null;
+      }
+
+      console.log('data', data);
+
+      return {
+        name: data.name,
+        id: data.id,
+        imageUrl: data.sprites.front_default,
+        types: data.types.map(t => ({name: t.type.name})),
+        abilities: data.abilities.map(a => ({name: a.ability.name})),
+        stats: data.stats.map(s => ({name: s.stat.name, value: s.base_stat})),
+      };
+    } catch (err) {
+      setError(
+        'An error occurred while fetching Pokémon details. Please try again.',
+      );
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadPokemonData(page);
   }, [page, loadPokemonData]);
 
   return (
     <PokemonContext.Provider
-      value={{pokemons, loading, error, loadMore, handleRefresh}}>
+      value={{
+        pokemons,
+        loading,
+        error,
+        loadMore,
+        handleRefresh,
+        handleSearch,
+        getPokemonDetails,
+      }}>
       {children}
     </PokemonContext.Provider>
   );

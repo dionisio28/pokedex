@@ -7,10 +7,23 @@ import {
   PokemonTypes,
   styles,
 } from '../styled';
-import Text, {FONT_WEIGHT, SIZE} from '../../Shared/Text';
+import Text, {FONT_WEIGHT, SIZE} from '../../shared/Text';
 import {IPokemon} from '../../../context/PokemonContext';
 import {color, pokemonColorByTypes} from '../../../styles';
 import {Pokeball} from '../../../assets';
+import {useNavigation} from '@react-navigation/native';
+
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  PokemonDetails: {name: string};
+};
+
+type PokemonDetailsNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'PokemonDetails'
+>;
+
 interface PokemonCardProps {
   pokemon: IPokemon;
 }
@@ -20,6 +33,8 @@ const capitalizeFirstLetter = (text: string) => {
 };
 
 const PokemonCard = ({pokemon}: PokemonCardProps) => {
+  const {navigate} = useNavigation<PokemonDetailsNavigationProp>();
+
   const backgroundColor = useMemo(() => {
     const typeName = pokemon.types[0].type.name.toLowerCase();
     return (
@@ -28,8 +43,15 @@ const PokemonCard = ({pokemon}: PokemonCardProps) => {
     );
   }, [pokemon.types]);
 
+  const onPokemonCardPress = () => {
+    navigate('PokemonDetails', {name: pokemon.name});
+  };
+
   return (
-    <Card activeOpacity={0.6} backgroundColor={backgroundColor}>
+    <Card
+      onPress={onPokemonCardPress}
+      activeOpacity={0.6}
+      backgroundColor={backgroundColor}>
       <DetailsSpace>
         <Text
           size={SIZE.XXLARGE}
