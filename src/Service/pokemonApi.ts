@@ -23,6 +23,7 @@ interface PokemonDetails {
   id: string;
   sprites: {
     front_default: string;
+    other?: any
   };
   types: {
     slot: number;
@@ -35,6 +36,8 @@ interface PokemonDetails {
     base_stat: number;
     stat: {name: string};
   }[];
+  height: number;
+  weight: number;
 }
 
 interface PokemonResponse {

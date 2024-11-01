@@ -1,11 +1,18 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, ScrollView} from 'react-native';
 import {usePokemon} from '../../context/PokemonContext';
 import {IPokemonDetails} from 'src/context/PokemonContext';
 import {RouteProp, useRoute} from '@react-navigation/native';
-import {Container} from './styles';
+import {
+  Container,
+  PokeballImage,
+  PokemonImage,
+  PokemonImageContainer,
+} from './styles';
 import {pokemonColorByTypes} from '../../styles';
 import PokemonHeader from './components/Header';
+import PokemonDetailsList from './components/PokemonDetailsList';
+import {Pokeball} from '../../assets';
 
 type PokemonDetailsRouteProp = RouteProp<
   {PokemonDetails: {name: string}},
@@ -44,10 +51,20 @@ const PokemonDetailsScreen = () => {
 
   return (
     <Container backgroundColor={backgroundColor}>
-      <PokemonHeader
-        name={pokemonDetails.name}
-        id={Number(pokemonDetails.id)}
-      />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <PokemonHeader
+          name={pokemonDetails.name}
+          id={Number(pokemonDetails.id)}
+          types={pokemonDetails.types}
+        />
+        <PokemonImageContainer>
+          <PokeballImage source={Pokeball} style={{tintColor: '#FFF'}} />
+          <PokemonImage source={{uri: pokemonDetails.imageUrl}} />
+        </PokemonImageContainer>
+        <ScrollView>
+          <PokemonDetailsList details={pokemonDetails} />
+        </ScrollView>
+      </ScrollView>
     </Container>
   );
 };

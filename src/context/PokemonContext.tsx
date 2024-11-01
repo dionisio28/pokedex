@@ -32,6 +32,8 @@ export interface IPokemonDetails {
   types: {name: string}[];
   abilities: {name: string}[];
   stats: {name: string; value: number}[];
+  height: number;
+  weight: number;
 }
 
 interface PokemonContextData {
@@ -155,10 +157,12 @@ export const PokemonProvider: React.FC<{children: ReactNode}> = ({
       return {
         name: data.name,
         id: data.id,
-        imageUrl: data.sprites.front_default,
+        imageUrl: data.sprites.other?.home?.front_default,
         types: data.types.map(t => ({name: t.type.name})),
         abilities: data.abilities.map(a => ({name: a.ability.name})),
         stats: data.stats.map(s => ({name: s.stat.name, value: s.base_stat})),
+        height: data.height,
+        weight: data.weight,
       };
     } catch (err) {
       setError(
